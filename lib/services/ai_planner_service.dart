@@ -10,7 +10,6 @@ class AIPlannerService {
       "https://api.groq.com/openai/v1/chat/completions";
 
   String get _apiKey => dotenv.env['GROQ_API_KEY'] ?? "";
-
   // ================= COMMON GROQ CALL =================
 
   Future<String?> _callGroq(String prompt) async {

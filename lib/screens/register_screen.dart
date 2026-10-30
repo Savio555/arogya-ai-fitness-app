@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../utils/app_theme.dart';
 import '../services/auth_service.dart';
 import '../services/data_reset_service.dart';
@@ -97,12 +98,31 @@ class RegisterScreen extends StatelessWidget {
                       ),
                     );
                   } catch (e) {
-                    // 3️⃣ Show error
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(e.toString()),
-                      ),
-                    );
+                    if (context.mounted) {
+                      String errorMessage = "Registration failed. Please try again.";
+
+                      if (e is FirebaseAuthException) {
+                        switch (e.code) {
+                          case 'email-already-in-use':
+                            errorMessage = "This email is already in use.";
+                            break;
+                          case 'weak-password':
+                            errorMessage = "The password provided is too weak.";
+                            break;
+                          case 'invalid-email':
+                            errorMessage = "The email address is badly formatted.";
+                            break;
+                          default:
+                            errorMessage = e.message ?? errorMessage;
+                        }
+                      }
+
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(errorMessage),
+                        ),
+                      );
+                    }
                   }
                 },
                 child: const Text(
